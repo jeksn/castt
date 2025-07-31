@@ -152,7 +152,7 @@ onMounted(() => {
                     <h2 class="text-lg font-semibold">Podcasts</h2>
                     <button 
                         @click="showAddPodcastForm = true"
-                        class="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm"
+                        class="px-3 py-2 cursor-pointer bg-neutral-200 text-neutral-800 rounded-md hover:bg-neutral-300 text-sm"
                     >
                         Add Podcast
                     </button>

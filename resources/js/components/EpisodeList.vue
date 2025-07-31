@@ -49,35 +49,35 @@
 
         <!-- Episodes List - Only this section updates during search -->
         <div v-else class="space-y-4">
-            <div v-for="episode in episodes" :key="episode.id" class="border border-gray-200 p-4 rounded-lg">
+            <div v-for="episode in episodes" :key="episode.id" class="dark:bg-neutral-800 bg-neutral-100 p-4 rounded-lg">
                 <div class="flex gap-4 items-start">
                     <img 
                         v-if="episode.thumbnail_url" 
                         :src="episode.thumbnail_url" 
                         :alt="episode.title"
-                        class="w-16 h-16 object-cover rounded-lg flex-shrink-0" 
+                        class="w-32 h-32 object-cover rounded-lg flex-shrink-0" 
                     />
                     <div 
                         v-else
-                        class="w-16 h-16 bg-gray-200 rounded-lg flex-shrink-0 flex items-center justify-center"
+                        class="w-32 h-32 bg-gray-200 rounded-lg flex-shrink-0 flex items-center justify-center"
                     >
                         <span class="text-gray-500 text-xs">No Image</span>
                     </div>
 
                     <div class="flex-1 min-w-0">
-                        <h3 class="font-semibold text-lg text-gray-900 mb-1">{{ episode.title }}</h3>
-                        <p class="text-sm text-gray-500 mb-2">
+                        <h3 class="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-1">{{ episode.title }}</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">
                             {{ formatDate(episode.published_at) }}
                             <span v-if="episode.duration_formatted"> · {{ episode.duration_formatted }}</span>
                         </p>
 
-                        <div v-if="episode.description" class="text-sm text-gray-700 mb-3">
-                            <p>
+                        <div v-if="episode.description" class="text-sm text-gray-700 dark:text-gray-400 mb-3">
+                            <p class="prose prose-p:text-gray-700 dark:prose-p:text-gray-400">
                                 {{ expandedEpisodes[episode.id] ? episode.description : getShortDescription(episode.description) }}
                                 <button
                                     v-if="episode.description.length > 100"
                                     @click="toggleDescription(episode.id)"
-                                    class="text-blue-600 hover:text-blue-800 ml-1"
+                                    class="underline cursor-pointer ml-1"
                                 >
                                     {{ expandedEpisodes[episode.id] ? 'Show Less' : 'Show More' }}
                                 </button>
@@ -87,7 +87,7 @@
                         <a 
                             :href="episode.audio_url" 
                             target="_blank" 
-                            class="inline-block text-blue-600 hover:text-blue-800 text-sm font-medium"
+                            class="inline-block text-sm font-medium"
                         >
                             🎧 Listen Now
                         </a>
@@ -109,7 +109,7 @@
 
         <!-- Pagination Controls -->
         <div v-if="pagination && pagination.last_page > 1" class="flex justify-center items-center gap-4 mt-6">
-            <div class="text-sm text-gray-700">
+            <div class="text-sm text-gray-700 dark:text-gray-400">
                 Showing {{ pagination.from }}-{{ pagination.to }} of {{ pagination.total }} episodes
             </div>
             
@@ -120,8 +120,8 @@
                     :disabled="pagination.current_page <= 1"
                     class="px-3 py-1 text-sm border rounded-md transition-colors"
                     :class="pagination.current_page <= 1 
-                        ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed' 
-                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                        ? 'bg-gray-100 text-gray-400 border-gray-200 dark:bg-gray-800 dark:text-gray-600 dark:border-gray-700 cursor-not-allowed' 
+                        : 'bg-white text-gray-700 border-gray-300 dark:bg-gray-700 dark:text-gray-400 dark:border-gray-600 hover:bg-gray-600'
                     "
                 >
                     Previous
@@ -135,12 +135,12 @@
                         class="px-3 py-1 text-sm border rounded-md transition-colors"
                         :class="page === pagination.current_page 
                             ? 'bg-blue-600 text-white border-blue-600' 
-                            : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                            : 'bg-white text-gray-700 border-gray-300 dark:bg-gray-700 dark:text-gray-400 dark:border-gray-600 hover:bg-gray-600 dark:hover:bg-gray-600 dark:hover:text-gray-200 dark:hover:border-gray-600'
                         "
                     >
                         {{ page }}
                     </button>
-                    <span v-else class="px-3 py-1 text-sm text-gray-500">...</span>
+                    <span v-else class="px-3 py-1 text-sm text-gray-500 dark:text-gray-400">...</span>
                 </template>
                 
                 <!-- Next Page Button -->
@@ -149,8 +149,8 @@
                     :disabled="pagination.current_page >= pagination.last_page"
                     class="px-3 py-1 text-sm border rounded-md transition-colors"
                     :class="pagination.current_page >= pagination.last_page 
-                        ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed' 
-                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                        ? 'bg-gray-100 text-gray-400 border-gray-200 dark:bg-gray-800 dark:text-gray-600 dark:border-gray-700 cursor-not-allowed' 
+                        : 'bg-white text-gray-700 border-gray-300 dark:bg-gray-700 dark:text-gray-400 dark:border-gray-600 hover:bg-gray-600'
                     "
                 >
                     Next
