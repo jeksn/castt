@@ -1,5 +1,28 @@
 <template>
     <div class="flex flex-col gap-3">
+        <!-- Podcast Title and Description -->
+        <div v-if="selectedPodcast" class="mb-4">
+            <div class="flex gap-4 items-start">
+                <img 
+                    v-if="selectedPodcast.image_url" 
+                    :src="selectedPodcast.image_url" 
+                    :alt="selectedPodcast.title"
+                    class="w-20 h-20 object-cover rounded-lg flex-shrink-0" 
+                />
+                <div class="flex-1">
+                    <h2 class="text-2xl font-semibold">{{ selectedPodcast.title }}</h2>
+                    <p v-if="selectedPodcast.description" class="dark:text-gray-400 text-gray-700 mt-2">{{ stripHtml(selectedPodcast.description) }}</p>
+                </div>
+            </div>
+        </div>
+        <!-- Episode Completion Progress -->
+        <div v-if="completionStats.total > 0" class="mb-4">
+            <div class="dark:bg-gray-800 bg-gray-100 p-2 rounded text-sm font-medium text-gray-700 dark:text-gray-400">
+                {{ completionStats.completed }} of {{ completionStats.total }} episodes completed
+            </div>
+        </div>
+		
+
         <!-- Search and Filter Controls - Always visible and stable -->
         <div class="flex gap-4 mb-4 items-center flex-wrap">
             <input
@@ -73,7 +96,7 @@
 
                         <div v-if="episode.description" class="text-sm text-gray-700 dark:text-gray-400 mb-3">
                             <p class="prose prose-p:text-gray-700 dark:prose-p:text-gray-400">
-                                {{ expandedEpisodes[episode.id] ? episode.description : getShortDescription(episode.description) }}
+                                {{ expandedEpisodes[episode.id] ? stripHtml(episode.description) : getShortDescription(episode.description) }}
                                 <button
                                     v-if="episode.description.length > 100"
                                     @click="toggleDescription(episode.id)"
@@ -185,6 +208,10 @@ const props = defineProps({
         type: String,
         default: null,
     },
+    podcasts: {
+        type: Array,
+        default: () => [],
+    },
 });
 
 const emit = defineEmits(['search', 'filter-change', 'page-change']);
@@ -195,12 +222,51 @@ const sortOrder = ref('newest');
 const expandedEpisodes = ref({});
 const markingAllCompleted = ref(false);
 const searchInputRef = ref(null);
+const completionStats = ref({ completed: 0, total: 0 });
+
+// Function to strip HTML tags from text
+const stripHtml = (html) => {
+    if (!html) return '';
+    // Create a temporary div element to parse HTML
+    const temp = document.createElement('div');
+    temp.innerHTML = html;
+    return temp.textContent || temp.innerText || '';
+};
+
+// Computed property to get the selected podcast
+const selectedPodcast = computed(() => {
+    if (!props.selectedPodcastId || !props.podcasts) return null;
+    const found = props.podcasts.find(podcast => podcast.id === props.selectedPodcastId);
+    if (found) {
+        console.log('Selected podcast object:', found);
+        console.log('Available properties:', Object.keys(found));
+    }
+    return found;
+});
 
 // Computed property to check if all episodes are completed
 const allEpisodesCompleted = computed(() => {
     if (props.episodes.length === 0) return false;
     return props.episodes.every(episode => episode.is_completed);
 });
+
+// Function to fetch completion statistics for the selected podcast
+const fetchCompletionStats = async () => {
+    if (!props.selectedPodcastId) return;
+    
+    try {
+        const response = await axios.get(`/podcasts/${props.selectedPodcastId}/completion-stats`);
+        completionStats.value = response.data;
+    } catch (error) {
+        console.error('Error fetching completion stats:', error);
+        // Fallback to pagination data if available
+        if (props.pagination) {
+            completionStats.value.total = props.pagination.total;
+            // For completed count, we can only estimate based on current page
+            completionStats.value.completed = props.episodes.filter(episode => episode.is_completed).length;
+        }
+    }
+};
 
 const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString();
 
@@ -318,6 +384,20 @@ const getVisiblePages = () => {
 let isUserSearching = false;
 let searchTimeout;
 
+// Watch for changes in selected podcast to fetch completion stats
+watch(() => props.selectedPodcastId, (newPodcastId) => {
+    if (newPodcastId) {
+        fetchCompletionStats();
+    }
+}, { immediate: true });
+
+// Also fetch stats when episodes change (after completion toggles)
+watch(() => props.episodes, () => {
+    if (props.selectedPodcastId) {
+        fetchCompletionStats();
+    }
+}, { deep: true });
+
 // Use a debounced approach for search to avoid losing focus
 watch(search, (newValue) => {
     clearTimeout(searchTimeout);
@@ -347,4 +427,3 @@ li:hover {
     background-color: #f7fafc;
 }
 </style>
-

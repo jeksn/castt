@@ -22,6 +22,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('episodes/{episode}/toggle-completed', [EpisodeController::class, 'toggleCompleted'])->name('episodes.toggle-completed');
     Route::post('episodes/mark-all-completed', [EpisodeController::class, 'markAllCompleted'])->name('episodes.mark-all-completed');
     Route::post('episodes/mark-all-incomplete', [EpisodeController::class, 'markAllIncomplete'])->name('episodes.mark-all-incomplete');
+    
+    // Podcast completion statistics
+    Route::get('podcasts/{podcast}/completion-stats', [EpisodeController::class, 'getCompletionStats'])->name('podcasts.completion-stats');
 });
 
 require __DIR__.'/settings.php';

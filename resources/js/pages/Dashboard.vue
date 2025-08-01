@@ -159,7 +159,7 @@ onMounted(() => {
                 </div>
                 
                 <PodcastList 
-                    :podcasts="podcasts"
+                    :podcasts="props.podcasts"
                     :selected-podcast-id="selectedPodcastId"
                     @select-podcast="selectPodcast"
                     @podcast-refreshed="handlePodcastRefreshed"
@@ -173,7 +173,8 @@ onMounted(() => {
                     :loading="episodesLoading"
                     :pagination="paginationData"
                     :selected-podcast-id="selectedPodcastId"
-                    :selected-podcast-title="selectedPodcastId ? podcasts.find(p => p.id === selectedPodcastId)?.title : null"
+                    :selected-podcast-title="selectedPodcastId ? props.podcasts.find(p => p.id === selectedPodcastId)?.title : null"
+                    :podcasts="props.podcasts"
                     @search="handleSearch"
                     @filter-change="handleFilterChange"
                     @page-change="handlePageChange"

@@ -175,4 +175,32 @@ class EpisodeController extends Controller
             'updated_count' => $updatedCount,
         ]);
     }
+
+    public function getCompletionStats(Request $request): JsonResponse
+    {
+        $user = Auth::user();
+        $podcastId = $request->route('podcast');
+        
+        // Verify user is subscribed to this podcast
+        $subscribedPodcastIds = $user->podcasts()->pluck('podcasts.id');
+        if (!$subscribedPodcastIds->contains($podcastId)) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+        
+        // Get total episodes for this podcast
+        $totalEpisodes = Episode::where('podcast_id', $podcastId)->count();
+        
+        // Get completed episodes count for this user and podcast
+        $completedEpisodes = UserEpisode::where('user_id', Auth::id())
+            ->where('is_completed', true)
+            ->whereHas('episode', function ($query) use ($podcastId) {
+                $query->where('podcast_id', $podcastId);
+            })
+            ->count();
+        
+        return response()->json([
+            'completed' => $completedEpisodes,
+            'total' => $totalEpisodes,
+        ]);
+    }
 }
