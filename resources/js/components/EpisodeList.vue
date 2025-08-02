@@ -183,7 +183,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, watch, computed, nextTick } from 'vue';
 import axios from 'axios';
 

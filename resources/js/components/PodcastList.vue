@@ -25,18 +25,18 @@
     </div>
 </template>
 		
-<script setup>
+<script setup lang="ts">
 import axios from 'axios';
 import { RefreshCcw, Trash2 } from 'lucide-vue-next';
 
-const props = defineProps({
+defineProps({
     podcasts: Array,
     selectedPodcastId: [Number, null],
 });
 
 const emit = defineEmits(['select-podcast', 'podcast-refreshed']);
 
-const refreshFeed = async (podcast) => {
+const refreshFeed = async (podcast: any) => {
     try {
         await axios.post(`/podcasts/${podcast.id}/refresh`);
         emit('podcast-refreshed');
@@ -45,7 +45,7 @@ const refreshFeed = async (podcast) => {
     }
 };
 
-const deletePodcast = async (podcast) => {
+const deletePodcast = async (podcast: any) => {
     if (confirm(`Are you sure you want to delete the podcast "${podcast.title}"?`)) {
         try {
             await axios.delete(`/podcasts/${podcast.id}`);
