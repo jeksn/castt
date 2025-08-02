@@ -31,7 +31,7 @@ import { RefreshCcw, Trash2 } from 'lucide-vue-next';
 
 const props = defineProps({
     podcasts: Array,
-    selectedPodcastId: Number,
+    selectedPodcastId: [Number, null],
 });
 
 const emit = defineEmits(['select-podcast', 'podcast-refreshed']);

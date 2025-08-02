@@ -43,8 +43,6 @@ const props = defineProps<{
     podcasts: Podcast[];
 }>();
 
-console.log('Dashboard props:', props);
-
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',

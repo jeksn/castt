@@ -197,16 +197,16 @@ const props = defineProps({
         default: false,
     },
     pagination: {
-        type: Object,
-        default: null,
+        type: [Object, null],
+        default: () => null,
     },
     selectedPodcastId: {
-        type: Number,
-        default: null,
+        type: [Number, null],
+        default: () => null,
     },
     selectedPodcastTitle: {
-        type: String,
-        default: null,
+        type: [String, null],
+        default: () => null,
     },
     podcasts: {
         type: Array,
@@ -237,10 +237,6 @@ const stripHtml = (html) => {
 const selectedPodcast = computed(() => {
     if (!props.selectedPodcastId || !props.podcasts) return null;
     const found = props.podcasts.find(podcast => podcast.id === props.selectedPodcastId);
-    if (found) {
-        console.log('Selected podcast object:', found);
-        console.log('Available properties:', Object.keys(found));
-    }
     return found;
 });
 
