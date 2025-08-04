@@ -67,3 +67,16 @@ export interface PaginationData {
     to: number;
     links: any[];
 }
+
+export interface CompletionStats {
+    total: number;
+    completed: number;
+}
+
+export interface SelectedPodcast {
+    id: number;
+    title: string;
+    description?: string;
+    image_url?: string;
+}
+    

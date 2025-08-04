@@ -11,14 +11,14 @@
                 />
                 <div class="flex-1">
                     <h2 class="text-2xl font-semibold">{{ selectedPodcast.title }}</h2>
+					<!-- Episode Completion Progress -->
+					<div v-if="completionStats.total > 0" class="mb-4">
+						<div class="text-base w-fit font-medium text-gray-700 dark:text-gray-400">
+							{{ completionStats.completed }} of {{ completionStats.total }} episodes completed
+						</div>
+					</div>
                     <p v-if="selectedPodcast.description" class="dark:text-gray-400 text-gray-700 mt-2">{{ stripHtml(selectedPodcast.description) }}</p>
                 </div>
-            </div>
-        </div>
-        <!-- Episode Completion Progress -->
-        <div v-if="completionStats.total > 0" class="mb-4">
-            <div class="dark:bg-gray-800 bg-gray-100 p-2 rounded text-sm font-medium text-gray-700 dark:text-gray-400">
-                {{ completionStats.completed }} of {{ completionStats.total }} episodes completed
             </div>
         </div>
 		
@@ -154,7 +154,7 @@
                 <template v-for="page in getVisiblePages()" :key="page">
                     <button
                         v-if="page !== '...'"
-                        @click="emit('page-change', page)"
+                        @click="emit('page-change', page as number)"
                         class="px-3 py-1 text-sm border rounded-md transition-colors"
                         :class="page === pagination.current_page 
                             ? 'bg-blue-600 text-white border-blue-600' 
@@ -184,48 +184,46 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed, nextTick } from 'vue';
+import { ref, watch, computed, nextTick, withDefaults } from 'vue';
 import axios from 'axios';
+import { type CompletionStats, type SelectedPodcast, type Episode, type PaginationData, type Podcast } from '@/types';
 
-const props = defineProps({
-    episodes: {
-        type: Array,
-        default: () => [],
-    },
-    loading: {
-        type: Boolean,
-        default: false,
-    },
-    pagination: {
-        type: [Object, null],
-        default: () => null,
-    },
-    selectedPodcastId: {
-        type: [Number, null],
-        default: () => null,
-    },
-    selectedPodcastTitle: {
-        type: [String, null],
-        default: () => null,
-    },
-    podcasts: {
-        type: Array,
-        default: () => [],
-    },
+const props = withDefaults(defineProps<{
+    episodes?: Episode[];
+    loading?: boolean;
+    pagination?: PaginationData | null;
+    selectedPodcastId?: number | null;
+    selectedPodcastTitle?: string | null;
+    podcasts?: Podcast[];
+}>(), {
+    episodes: () => [],
+    loading: false,
+    pagination: null,
+    selectedPodcastId: null,
+    selectedPodcastTitle: null,
+    podcasts: () => [],
 });
 
-const emit = defineEmits(['search', 'filter-change', 'page-change']);
+const emit = defineEmits<{
+    search: [query: string];
+    'filter-change': [filters: { hideCompleted: boolean; sortOrder: string }];
+    'page-change': [page: number];
+}>();
 
 const search = ref('');
 const hideCompleted = ref(false);
 const sortOrder = ref('newest');
-const expandedEpisodes = ref({});
+const expandedEpisodes = ref<Record<number, boolean>>({});
 const markingAllCompleted = ref(false);
-const searchInputRef = ref(null);
-const completionStats = ref({ completed: 0, total: 0 });
+const searchInputRef = ref<HTMLInputElement | null>(null);
+const completionStats = ref<CompletionStats>({
+    completed: 0,
+    total: 0,
+});
+
 
 // Function to strip HTML tags from text
-const stripHtml = (html) => {
+const stripHtml = (html: string) => {
     if (!html) return '';
     // Create a temporary div element to parse HTML
     const temp = document.createElement('div');
@@ -264,18 +262,18 @@ const fetchCompletionStats = async () => {
     }
 };
 
-const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString();
+const formatDate = (dateStr: string): string => new Date(dateStr).toLocaleDateString();
 
-const getShortDescription = (description) => {
+const getShortDescription = (description: string | undefined): string => {
     if (!description) return '';
     return description.length > 100 ? description.substring(0, 100) + '...' : description;
 };
 
-const toggleDescription = (episodeId) => {
+const toggleDescription = (episodeId: number): void => {
     expandedEpisodes.value[episodeId] = !expandedEpisodes.value[episodeId];
 };
 
-const toggleCompleted = async (episode) => {
+const toggleCompleted = async (episode: Episode): Promise<void> => {
     try {
         const response = await axios.post(`/episodes/${episode.id}/toggle-completed`);
         episode.is_completed = response.data.is_completed;
@@ -339,7 +337,7 @@ const onFilterChange = () => {
     });
 };
 
-const getVisiblePages = () => {
+const getVisiblePages = (): (number | string)[] => {
     if (!props.pagination) return [];
     
     const current = props.pagination.current_page;
@@ -378,7 +376,7 @@ const getVisiblePages = () => {
 
 // Track if user is actively searching
 let isUserSearching = false;
-let searchTimeout;
+let searchTimeout: ReturnType<typeof setTimeout> | undefined;
 
 // Watch for changes in selected podcast to fetch completion stats
 watch(() => props.selectedPodcastId, (newPodcastId) => {
