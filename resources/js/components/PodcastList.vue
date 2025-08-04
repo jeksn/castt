@@ -2,7 +2,7 @@
     <div class="space-y-4">
         <div v-for="podcast in podcasts" :key="podcast.id" >
             <div @click="$emit('select-podcast', podcast.id)"
-                class="border rounded-lg p-4 flex flex-col items-start gap-4 cursor-pointer hover:border-neutral-200"
+                class="border rounded-lg p-4 flex flex-col items-start gap-4 cursor-pointer hover:border-neutral-200 dark:bg-black/10 bg-neutral-100"
                 :class="{'border-neutral-200 shadow-md': podcast.id === selectedPodcastId}"
             >
 				<div class="flex items-center gap-2">

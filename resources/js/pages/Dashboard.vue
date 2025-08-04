@@ -114,7 +114,7 @@ onMounted(() => {
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 gap-4 p-4">
             <!-- Left Sidebar - Podcast List -->
-            <div class="w-80 flex flex-col gap-4 dark:bg-neutral-800 bg-neutral-100 rounded-lg p-4">
+            <div class="w-80 flex flex-col gap-4 dark:bg-neutral-800 bg-neutral-100 h-fit sticky top-5 z-10 rounded-lg p-4">
                 <div class="flex items-center justify-between">
                     <h2 class="text-lg font-semibold">Podcasts</h2>
                     <button 
