@@ -3,41 +3,10 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import PodcastList from '@/components/PodcastList.vue';
 import EpisodeList from '@/components/EpisodeList.vue';
 import AddPodcastForm from '@/components/AddPodcastForm.vue';
-import { type BreadcrumbItem } from '@/types';
+import { type BreadcrumbItem, type Podcast, type Episode, type PaginationData } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
-
-interface Podcast {
-    id: number;
-    title: string;
-    description?: string;
-    image_url?: string;
-    author?: string;
-    last_refreshed_at?: string;
-}
-
-interface Episode {
-    id: number;
-    title: string;
-    description?: string;
-    audio_url: string;
-    thumbnail_url?: string;
-    duration_formatted?: string;
-    published_at: string;
-    is_completed: boolean;
-    podcast: Podcast;
-}
-
-interface PaginationData {
-    current_page: number;
-    last_page: number;
-    per_page: number;
-    total: number;
-    from: number;
-    to: number;
-    links: any[];
-}
 
 const props = defineProps<{
     podcasts: Podcast[];
@@ -145,7 +114,7 @@ onMounted(() => {
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 gap-4 p-4">
             <!-- Left Sidebar - Podcast List -->
-            <div class="w-80 flex flex-col gap-4">
+            <div class="w-80 flex flex-col gap-4 dark:bg-neutral-800 bg-neutral-100 rounded-lg p-4">
                 <div class="flex items-center justify-between">
                     <h2 class="text-lg font-semibold">Podcasts</h2>
                     <button 

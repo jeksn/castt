@@ -36,3 +36,34 @@ export interface User {
 }
 
 export type BreadcrumbItemType = BreadcrumbItem;
+
+export interface Podcast {
+    id: number;
+    title: string;
+    description?: string;
+    image_url?: string;
+    author?: string;
+    last_refreshed_at?: string;
+}
+
+export interface Episode {
+    id: number;
+    title: string;
+    description?: string;
+    audio_url: string;
+    thumbnail_url?: string;
+    duration_formatted?: string;
+    published_at: string;
+    is_completed: boolean;
+    podcast: Podcast;
+}
+
+export interface PaginationData {
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+    from: number;
+    to: number;
+    links: any[];
+}
