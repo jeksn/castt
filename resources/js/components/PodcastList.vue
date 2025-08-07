@@ -1,5 +1,19 @@
 <template>
     <div class="space-y-4">
+        <div>
+            <div @click="$emit('select-podcast', null)"
+                class="border rounded-lg p-4 flex flex-col items-start gap-4 cursor-pointer hover:border-neutral-200 dark:bg-black/10 bg-neutral-100"
+                :class="{'border-neutral-200 shadow-md': selectedPodcastId === null}"
+            >
+                <div class="flex items-center gap-2">
+                    <div class="w-16 h-16 rounded-full bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center text-xs font-medium text-neutral-700 dark:text-neutral-200">ALL</div>
+                    <div class="flex-1 flex flex-col gap-1">
+                        <h3 class="font-semibold text-lg">All Podcasts</h3>
+                        <p class="text-sm text-slate-500">Show episodes from every podcast</p>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div v-for="podcast in podcasts" :key="podcast.id" >
             <div @click="$emit('select-podcast', podcast.id)"
                 class="border rounded-lg p-4 flex flex-col items-start gap-4 cursor-pointer hover:border-neutral-200 dark:bg-black/10 bg-neutral-100"
@@ -35,7 +49,10 @@ defineProps<{
     selectedPodcastId: number | null;
 }>();
 
-const emit = defineEmits(['select-podcast', 'podcast-refreshed']);
+const emit = defineEmits<{
+    (e: 'select-podcast', id: number | null): void;
+    (e: 'podcast-refreshed'): void;
+}>();
 
 const refreshFeed = async (podcast: Podcast) => {
     try {
